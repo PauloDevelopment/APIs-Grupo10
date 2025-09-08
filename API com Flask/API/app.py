@@ -4,7 +4,6 @@ app = Flask(__name__)
 users = []
 current_id = 0
 
-
 @app.route('/users', methods=['POST'])
 def createUsers():
     global current_id
