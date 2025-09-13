@@ -1,25 +1,25 @@
 from flask import Flask, jsonify, request
-# Importações para o Swagger UI
+
 from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
 
-# Inicializa a aplicação Flask
+
 app = Flask(__name__)
 
-# --- Configuração do Swagger UI ---
-SWAGGER_URL = '/apidocs'  # URL para a UI do Swagger
-API_URL = '/swagger.json'  # URL para a especificação da API
 
-# Carrega a especificação do arquivo swagger.yml
+SWAGGER_URL = '/apidocs'  
+API_URL = '/swagger.json'  
+
+
 with open('swagger.yaml', 'r') as f: 
     swagger_spec = yaml.safe_load(f)
 
-# Rota para servir o swagger.json
+
 @app.route(API_URL)
 def swagger_json():
     return jsonify(swagger_spec)
 
-# Cria o blueprint do Swagger UI
+
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
@@ -28,11 +28,11 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 
-# Registra o blueprint na aplicação
+
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 
-# --- Banco de Dados em Memória ---
+
 users = [
     {"id": 1, "nome": "Alice", "email": "alice@example.com"},
     {"id": 2, "nome": "Bob", "email": "bob@example.com"},
@@ -41,7 +41,7 @@ users = [
 next_user_id = 4
 
 
-# --- Definição das Rotas da API ---
+
 
 @app.route('/users', methods=['GET', 'POST'])
 def handle_users():
@@ -96,6 +96,6 @@ def handle_user(id):
         return jsonify({"mensagem": "Usuário excluído"}), 200
 
 
-# --- Execução da Aplicação ---
+
 if __name__ == '__main__':
     app.run(debug=True)
