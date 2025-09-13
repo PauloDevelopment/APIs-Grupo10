@@ -1,114 +1,101 @@
-from flask import Flask, request, jsonify
-from flasgger import Swagger
+from flask import Flask, jsonify, request
+# Importações para o Swagger UI
+from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
 
+# Inicializa a aplicação Flask
 app = Flask(__name__)
 
+# --- Configuração do Swagger UI ---
+SWAGGER_URL = '/apidocs'  # URL para a UI do Swagger
+API_URL = '/swagger.json'  # URL para a especificação da API
 
-config = {
-    "headers": [],
-    "specs": [
-        {
-            "endpoint": 'apispec_1',
-            "route": '/apispec_1.json',
-            "rule_filter": lambda rule: True,  
-            "model_filter": lambda tag: True,  
-        }
-    ],
-    "static_url_path": "/flasgger_static",
-    "swagger_ui": True,
-    "specs_route": "/apidocs/" 
-}
+# Carrega a especificação do arquivo swagger.yml
+with open('swagger.yaml', 'r') as f: 
+    swagger_spec = yaml.safe_load(f)
 
+# Rota para servir o swagger.json
+@app.route(API_URL)
+def swagger_json():
+    return jsonify(swagger_spec)
 
-template = {
-    "openapi": "3.0.3",
-    "info": {
-        "title": "API Simples de Usuários com Flask",
-        "description": "Uma API RESTful para gerenciar usuários (CRUD), documentada com Swagger.",
-        "version": "1.0.0"
-    },
-    "paths": {},
-    "components": {}
-}
-
-
-try:
-    with open('swagger.yaml', 'r', encoding='utf-8') as f:
-        custom_definitions = yaml.safe_load(f)
-        if custom_definitions:
-            template.update(custom_definitions)
-except FileNotFoundError:
-    print("Atenção: Arquivo 'swagger.yaml' não encontrado. A documentação será gerada a partir das docstrings.")
-except yaml.YAMLError as e:
-    print(f"Erro ao ler o arquivo YAML: {e}")
-
-
-swagger = Swagger(app, config=config, template=template)
-
-
-users = []
-current_id = 1
-
-
-
-@app.route('/users', methods=['POST'])
-def create_user():
-    """Cria um novo usuário."""
-    global current_id
-    data = request.json
-    if not data or 'nome' not in data or 'email' not in data:
-        return jsonify({"error": "Dados inválidos. 'nome' e 'email' são obrigatórios."}), 400
-    
-    new_user = {
-        'id': current_id,
-        'nome': data['nome'],
-        'email': data['email']
+# Cria o blueprint do Swagger UI
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "API de Usuários"
     }
-    users.append(new_user)
-    current_id += 1
-    return jsonify(new_user), 201
+)
 
-@app.route('/users', methods=['GET'])
-def get_all_users():
-    """Retorna uma lista de todos os usuários."""
-    return jsonify(users), 200
+# Registra o blueprint na aplicação
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-@app.route('/users/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    """Busca um usuário específico pelo seu ID."""
-    
-    user = next((user for user in users if user['id'] == user_id), None)
-    if user:
-        return jsonify(user), 200
-    return jsonify({"error": "Usuário não encontrado"}), 404
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    """Atualiza os dados de um usuário existente."""
-    user = next((user for user in users if user['id'] == user_id), None)
+# --- Banco de Dados em Memória ---
+users = [
+    {"id": 1, "nome": "Alice", "email": "alice@example.com"},
+    {"id": 2, "nome": "Bob", "email": "bob@example.com"},
+    {"id": 3, "nome": "Charlie", "email": "charlie@example.com"}
+]
+next_user_id = 4
+
+
+# --- Definição das Rotas da API ---
+
+@app.route('/users', methods=['GET', 'POST'])
+def handle_users():
+    global next_user_id
+    if request.method == 'GET':
+        return jsonify({
+            "mensagem": "Lista de usuários retornada com sucesso",
+            "dados": users
+        }), 200
+
+    elif request.method == 'POST':
+        new_user_data = request.get_json()
+        if not new_user_data or 'nome' not in new_user_data or 'email' not in new_user_data:
+            return jsonify({"erro": "Dados incompletos. 'nome' e 'email' são obrigatórios."}), 400
+        new_user = {
+            'id': next_user_id,
+            'nome': new_user_data['nome'],
+            'email': new_user_data['email']
+        }
+        users.append(new_user)
+        next_user_id += 1
+        return jsonify({
+            "mensagem": "Usuário criado com sucesso",
+            "dados": new_user
+        }), 201
+
+@app.route('/users/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_user(id):
+    user = next((user for user in users if user['id'] == id), None)
     if not user:
-        return jsonify({"error": "Usuário não encontrado"}), 404
-    
-    data = request.json
-    
-    user['nome'] = data.get('nome', user['nome'])
-    user['email'] = data.get('email', user['email'])
-    
-    return jsonify(user), 200
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
 
-@app.route('/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    """Exclui um usuário do sistema."""
-    global users
-    user_found = any(user['id'] == user_id for user in users)
-    if not user_found:
-        return jsonify({"error": "Usuário não encontrado"}), 404
-        
-    
-    users = [user for user in users if user['id'] != user_id]
-    return jsonify({"message": "Usuário excluído com sucesso"}), 200
+    if request.method == 'GET':
+        return jsonify({
+            "mensagem": "Usuário encontrado",
+            "dados": user
+        }), 200
+
+    elif request.method == 'PUT':
+        update_data = request.get_json()
+        if 'nome' in update_data:
+            user['nome'] = update_data['nome']
+        if 'email' in update_data:
+            user['email'] = update_data['email']
+        return jsonify({
+            "mensagem": "Usuário atualizado",
+            "dados": user
+        }), 200
+
+    elif request.method == 'DELETE':
+        users.remove(user)
+        return jsonify({"mensagem": "Usuário excluído"}), 200
 
 
+# --- Execução da Aplicação ---
 if __name__ == '__main__':
     app.run(debug=True)
