@@ -1,0 +1,5 @@
+Untitled:
+  url: http://127.0.0.1:5002/professores/2
+  method: DELETE
+  headers:
+    Content-Type: application/json
