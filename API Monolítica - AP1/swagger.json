@@ -5,7 +5,7 @@
     "description": "API REST para gerenciar Professores, Turmas e Alunos de uma instituição de ensino. Permite operações de CRUD completas para cada entidade.",
     "version": "1.0.0"
   },
-  "host": "localhost:5000",
+  "host": "localhost:5002",
   "basePath": "/",
   "schemes": ["http"],
   "tags": [

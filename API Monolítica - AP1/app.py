@@ -1,4 +1,5 @@
 from flask import Flask
+from flasgger import Swagger
 from config import Config
 from models import db
 
@@ -11,6 +12,8 @@ app.config['JSON_AS_ASCII'] = False
 app.config.from_object(Config)
 
 db.init_app(app)
+
+swagger = Swagger(app, template_file='swagger.json')
 
 app.register_blueprint(aluno_bp, url_prefix="/alunos")
 app.register_blueprint(professor_bp, url_prefix="/professores")
