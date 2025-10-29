@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  servico_gerenciamento:
+    build: ./servico_gerenciamento
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./servico_gerenciamento:/app
+    container_name: poc_servico_gerenciamento
+
+  servico_reservas:
+    build: ./servico_reservas
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./servico_reservas:/app
+    depends_on:
+      - servico_gerenciamento
+    container_name: poc_servico_reservas
+
+  servico_atividades_notas:
+    build: ./servico_atividades_notas
+    ports:
+      - "5002:5000"
+    volumes:
+      - ./servico_atividades_notas:/app
+    depends_on:
+      - servico_gerenciamento
+    container_name: poc_servico_atividades_notas

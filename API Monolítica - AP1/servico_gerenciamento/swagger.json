@@ -1,0 +1,336 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API de Gerenciamento Escolar",
+    "description": "API REST para gerenciar Professores, Turmas e Alunos de uma instituição de ensino. Permite operações de CRUD completas para cada entidade.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "tags": [
+    {
+      "name": "Professores",
+      "description": "Operações relacionadas a professores"
+    },
+    {
+      "name": "Turmas",
+      "description": "Operações relacionadas a turmas"
+    },
+    {
+      "name": "Alunos",
+      "description": "Operações relacionadas a alunos"
+    }
+  ],
+  "paths": {
+    "/professores/": {
+      "get": {
+        "tags": ["Professores"],
+        "summary": "Listar todos os professores",
+        "description": "Retorna uma lista com todos os professores cadastrados.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista de professores retornada com sucesso.",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Professor" }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Professores"],
+        "summary": "Criar um novo professor",
+        "description": "Cadastra um novo professor no sistema.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto do professor a ser criado",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ProfessorInput" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Professor criado com sucesso." },
+          "400": { "description": "Erro de validação, como idade em formato incorreto." }
+        }
+      }
+    },
+    "/professores/{professor_id}": {
+      "put": {
+        "tags": ["Professores"],
+        "summary": "Atualizar um professor",
+        "description": "Atualiza os dados de um professor existente a partir do seu ID.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "professor_id",
+            "in": "path",
+            "description": "ID do professor a ser atualizado",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com os dados do professor a serem atualizados",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ProfessorInput" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Professor atualizado com sucesso." },
+          "400": { "description": "Erro de validação nos dados enviados." },
+          "404": { "description": "Professor não encontrado." }
+        }
+      },
+      "delete": {
+        "tags": ["Professores"],
+        "summary": "Deletar um professor",
+        "description": "Remove um professor do sistema a partir do seu ID. A remoção só é permitida se o professor não estiver vinculado a nenhuma turma.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "professor_id",
+            "in": "path",
+            "description": "ID do professor a ser deletado",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Professor removido com sucesso." },
+          "400": { "description": "Não é possível deletar, pois o professor está vinculado a turmas." },
+          "404": { "description": "Professor não encontrado." }
+        }
+      }
+    },
+    "/turmas/": {
+      "get": {
+        "tags": ["Turmas"],
+        "summary": "Listar todas as turmas",
+        "responses": {
+          "200": {
+            "description": "Lista de turmas retornada com sucesso.",
+             "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Turma" }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Turmas"],
+        "summary": "Criar uma nova turma",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/TurmaInput" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Turma criada com sucesso." },
+          "400": { "description": "Erro de validação no ID do professor." },
+          "404": { "description": "Professor associado não encontrado." }
+        }
+      }
+    },
+    "/turmas/{turma_id}": {
+       "put": {
+        "tags": ["Turmas"],
+        "summary": "Atualizar uma turma",
+        "parameters": [
+          {
+            "name": "turma_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/TurmaUpdateInput" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Turma atualizada com sucesso." },
+          "400": { "description": "Erro de validação nos dados enviados." },
+          "404": { "description": "Turma ou professor associado não encontrado." }
+        }
+      },
+      "delete": {
+        "tags": ["Turmas"],
+        "summary": "Deletar uma turma",
+        "description": "Remove uma turma do sistema. A remoção só é permitida se a turma não tiver alunos vinculados.",
+        "parameters": [
+           {
+            "name": "turma_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Turma removida com sucesso." },
+          "400": { "description": "Não é possível deletar, pois a turma possui alunos." },
+          "404": { "description": "Turma não encontrada." }
+        }
+      }
+    },
+     "/alunos/": {
+      "get": {
+        "tags": ["Alunos"],
+        "summary": "Listar todos os alunos",
+        "responses": {
+          "200": {
+            "description": "Lista de alunos retornada com sucesso.",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Aluno" }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Alunos"],
+        "summary": "Criar um novo aluno",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AlunoInput" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Aluno criado com sucesso." },
+          "400": { "description": "Erro de validação nos dados enviados." },
+          "404": { "description": "Turma associada não encontrada." }
+        }
+      }
+    },
+    "/alunos/{aluno_id}": {
+      "put": {
+        "tags": ["Alunos"],
+        "summary": "Atualizar um aluno",
+        "parameters": [
+          {
+            "name": "aluno_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AlunoInput" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Aluno atualizado com sucesso." },
+          "400": { "description": "Erro de validação nos dados enviados." },
+          "404": { "description": "Aluno ou turma associada não encontrado." }
+        }
+      },
+       "delete": {
+        "tags": ["Alunos"],
+        "summary": "Deletar um aluno",
+        "parameters": [
+           {
+            "name": "aluno_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Aluno removido com sucesso." },
+          "404": { "description": "Aluno não encontrado." }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Professor": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "nome": { "type": "string" },
+        "idade": { "type": "integer" },
+        "materia": { "type": "string" },
+        "observacoes": { "type": "string" }
+      }
+    },
+    "ProfessorInput": {
+      "type": "object",
+      "required": ["nome", "idade", "materia"],
+      "properties": {
+        "nome": { "type": "string", "example": "Dr. House" },
+        "idade": { "type": "integer", "example": 45 },
+        "materia": { "type": "string", "example": "Diagnóstico" },
+        "observacoes": { "type": "string", "example": "Especialista em doenças infecciosas." }
+      }
+    },
+    "Turma": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "descricao": { "type": "string" },
+        "ativo": { "type": "boolean" },
+        "professor_id": { "type": "integer" },
+        "professor_nome": { "type": "string" },
+        "total_alunos": { "type": "integer" }
+      }
+    },
+    "TurmaInput": {
+      "type": "object",
+      "required": ["descricao", "professor_id"],
+      "properties": {
+        "descricao": { "type": "string", "example": "Turma de Diagnóstico Avançado 2025" },
+        "professor_id": { "type": "integer", "example": 1 }
+      }
+    },
+     "TurmaUpdateInput": {
+      "type": "object",
+      "properties": {
+        "descricao": { "type": "string", "example": "Turma de Diagnóstico Avançado 2025" },
+        "professor_id": { "type": "integer", "example": 1 },
+        "ativo": { "type": "boolean", "example": false }
+      }
+    },
+    "Aluno": {
+       "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "nome": { "type": "string" },
+          "idade": { "type": "integer" },
+          "data_nascimento": { "type": "string", "format": "date", "example": "15-08-2002" },
+          "nota_primeiro_semestre": { "type": "number", "format": "float" },
+          "nota_segundo_semestre": { "type": "number", "format": "float" },
+          "media_final": { "type": "number", "format": "float" },
+          "turma_id": { "type": "integer" }
+        }
+    },
+     "AlunoInput": {
+       "type": "object",
+       "required": ["nome", "idade", "data_nascimento", "nota_primeiro_semestre", "nota_segundo_semestre", "turma_id"],
+        "properties": {
+          "nome": { "type": "string", "example": "Maria da Silva" },
+          "idade": { "type": "integer", "example": 22 },
+          "data_nascimento": { "type": "string", "example": "15-08-2002" },
+          "nota_primeiro_semestre": { "type": "number", "format": "float", "example": 8.5 },
+          "nota_segundo_semestre": { "type": "number", "format": "float", "example": 9.0 },
+          "turma_id": { "type": "integer", "example": 1 }
+        }
+    }
+  }
+}
