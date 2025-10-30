@@ -3,8 +3,8 @@ from flasgger import Swagger
 from config import Config
 from models import db
 
-from servico_atividades_notas.controllers.atividades_controller import atividade_bp
-from servico_atividades_notas.controllers.notas_controller import nota_bp
+from controllers.atividades_controller import atividade_bp
+from controllers.notas_controller import nota_bp
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False

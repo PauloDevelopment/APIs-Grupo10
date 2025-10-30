@@ -13,6 +13,17 @@ def list_alunos():
 
 # ------------------------------------------------------------------
 
+@aluno_bp.route('/<int:aluno_id>', methods=['GET'])
+def get_aluno(aluno_id):
+    aluno = db.session.query(Aluno).filter_by(id=aluno_id).first()
+
+    if not aluno:
+        return jsonify({'error': 'Aluno não encontrado!'}), 404
+    
+    return jsonify(aluno.to_dict()), 200
+
+# ------------------------------------------------------------------
+
 @aluno_bp.route('/', methods=['POST'])
 def create_aluno():
     data = request.json

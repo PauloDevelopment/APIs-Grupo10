@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from servico_atividades_notas.models.atividades import Atividade
+from models.atividades import Atividade
 from models import db
 from datetime import datetime
 import requests

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from servico_atividades_notas.models.atividades import Atividade
-from servico_atividades_notas.models.notas import Nota
+from models.atividades import Atividade
+from models.notas import Nota
 from models import db
 import requests
 

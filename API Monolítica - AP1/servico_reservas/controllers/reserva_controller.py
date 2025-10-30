@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from servico_reservas.models.reserva import Reserva
+from models.reserva import Reserva
 from models import db
 from datetime import datetime
 import requests

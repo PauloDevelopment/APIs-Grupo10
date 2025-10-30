@@ -12,6 +12,17 @@ def list_turmas():
 
 # ------------------------------------------------------------------
 
+@turma_bp.route('/<int:turma_id>', methods=['GET'])
+def get_turma(turma_id):
+    turma = db.session.query(Turma).filter_by(id=turma_id).first()
+
+    if not turma:
+        return jsonify({'error': 'Turma não encontrada!'}), 404
+    
+    return jsonify(turma.to_dict()), 200
+
+# ------------------------------------------------------------------
+
 @turma_bp.route('/', methods=['POST'])
 def create_turma():
     data = request.json

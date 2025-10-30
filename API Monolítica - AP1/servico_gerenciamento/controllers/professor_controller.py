@@ -11,6 +11,17 @@ def list_professores():
 
 # ------------------------------------------------------------------
 
+@professor_bp.route('/<int:professor_id>', methods=['GET'])
+def get_professor(professor_id):
+    professor = db.session.query(Professor).filter_by(id=professor_id).first()
+
+    if not professor:
+        return jsonify({'error': 'Professor não encontrado!'}), 404
+    
+    return jsonify(professor.to_dict()), 200
+
+# ------------------------------------------------------------------
+
 @professor_bp.route('/', methods=['POST'])
 def create_professor():
     data = request.json

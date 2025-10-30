@@ -3,7 +3,7 @@ from flasgger import Swagger
 from config import Config
 from models import db
 
-from servico_reservas.controllers.reserva_controller import reserva_bp
+from controllers.reserva_controller import reserva_bp
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
