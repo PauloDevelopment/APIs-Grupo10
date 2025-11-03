@@ -148,6 +148,9 @@ def delete_atividade(atividade_id):
     if not atividade:
         return jsonify({'error': 'Atividade não encontrada!'}), 404
 
+    if atividade.notas:
+        return jsonify({'error': 'Não é possível deletar essa atividade porque tem notas vinculadas!'}), 400
+
     db.session.delete(atividade)
     db.session.commit()
     return jsonify({'message': 'Atividade removida com sucesso!'}), 200
