@@ -14,11 +14,11 @@ Este projeto implementa três microsserviços em Flask para gerenciar dados acad
 
 O sistema é dividido em três microsserviços:
 
-| Microsserviço   | Responsabilidade                                              | Dependências                     |
+| Microsserviços   | Responsabilidade                                              | Dependências                     |
 |-----------------|---------------------------------------------------------------|----------------------------------|
 | **Gerenciamento** | Cadastro e gerenciamento de alunos, professores e turmas     | Nenhuma                          |
 | **Reservas**      | Gerenciamento de reservas de sala vinculadas a turmas        | Requer ID da Turma               |
-| **Atividades**    | Gerenciamento de atividades e notas vinculadas a professores e turmas | Requer ID do Professor e da Turma |
+| **Atividades/Notas**    | Gerenciamento de atividades e notas vinculadas a professores e turmas | Requer ID do Professor e da Turma |
 
 Cada microsserviço possui:
 
@@ -41,8 +41,7 @@ Cada microsserviço possui:
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/PauloDevelopment/APIs-Grupo10.git
    ```
 
 2. Execute os microsserviços com Docker Compose:
@@ -92,5 +91,12 @@ A comunicação entre os microsserviços é feita de forma **síncrona**, utiliz
 - `POST /atividades` — Cria atividade (requer ID do Professor e da Turma)  
 - `PUT /atividades/<id>` — Atualiza atividade  
 - `DELETE /atividades/<id>` — Remove atividade
+
+### Notas
+
+- `GET /notas` — Lista todas as notas registradas  
+- `POST /notas` — Cria uma nova nota (requer ID do Aluno e ID da Atividade)  
+- `PUT /notas/<id>` — Atualiza uma nota existente  
+- `DELETE /notas/<id>` — Remove uma nota
 
 ---
