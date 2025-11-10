@@ -53,9 +53,9 @@ Cada microsserviço possui:
 
 | Serviço        | URL Swagger                |
 |----------------|----------------------------|
-| Gerenciamento  | http://localhost:5000/docs |
-| Reservas       | http://localhost:5001/docs |
-| Atividades     | http://localhost:5002/docs |
+| Gerenciamento  | http://localhost:5000/apidocs |
+| Reservas       | http://localhost:5001/apidocs |
+| Atividades     | http://localhost:5002/apidocs |
 
 ---
 
